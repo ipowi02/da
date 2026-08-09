@@ -1,4 +1,4 @@
-/* da.h - 1.0.1 - Public Domain 
+/* da.h - 1.1 - Public Domain 
  *
  * This single header file library provides a simple implementation of Dynamic Arrays in C.
  * Although mostly inspired by [Tsoding](https://github.com/tsoding)'s implementation of dynamic arrays,
@@ -24,7 +24,10 @@
 
 /* INITIALIZERS */
 /* Generic dynamic array type, use it to create arrays of custom types. */
-#define da_t(T) struct {T *data; size_t length; size_t capacity;}
+#define da_member(T) T *data; size_t length; size_t capacity 
+#define da_t(T) struct {da_member(T);}
+
+
 #define da_init(xs) memset((xs), 0, sizeof(*(xs)))
 #define da_free(xs) DA_FREE((xs).data)
 #define da_deinit(xs) do { da_free(xs); da_init(xs); } while(0)
@@ -32,7 +35,9 @@
 /* ACCESSORS */
 /* Gets an element of array xs, after asserting its length is greater than 0, and that the index 'idx' is smaller
  *  than the length. */
-#define da_checked_at(xs, idx)\
+#define da_at(xs, idx) (xs)->data[(idx)]
+
+#define da_checked_at(xs, idx)						\
   (xs)->data[(DA_ASSERT((xs)->length > 0 && "Tried to access items of 0 length array"), \
 	      DA_ASSERT((xs)->length > (idx) && "The index is greater than the length of the array"),\
 	      (idx))]
@@ -76,10 +81,10 @@
     } while (0)
 
 /* Pushes an element into array xs. */
-#define da_push(xs, item)		       \
+#define da_push(xs, ...)		       \
     do {                                       \
 	 da_reserve((xs), (xs)->length + 1);    \
-	 (xs)->data[(xs)->length++] = (item);	\
+	 (xs)->data[(xs)->length++] = (__VA_ARGS__);	\
     } while (0)
 
 /* Pushes N elements from the memory region pointed to by 'items' to array xs,
@@ -128,4 +133,6 @@ typedef da_t(double) da_double_t;
 #endif /* DA_H */
 /* Update log:
  * 1.0.1 (2026-03-19) Now da_checked_at asserts the index is less than the length of the array too.
+ * 1.1   (2026-08-09) Added da_member
+                      Fixed da_at
  */
