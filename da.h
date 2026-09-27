@@ -7,7 +7,7 @@
  */
 #ifndef DA_H
 #define DA_H
-#define DA_H_VERSION "1.1"
+#define DA_H_VERSION "1.2"
 
 #define DA_ALLOC malloc
 #define DA_FREE free
@@ -112,15 +112,24 @@
 #define da_sort(xs, fn) qsort((xs)->data, (xs)->length, sizeof(*(xs)->data), fn)
 
 /* Inserts an element into the dynamic array xs, at index idx. */
-#define da_insert(xs, idx, item)				        \
-     do {							        \
-          da_reserve(xs, xs->length+1);				        \
-          memmove((xs)->data + (idx + 1) * sizeof(*(xs)->data),	        \
-	          (xs)->data + idx * sizeof(*(xs)->data),		\
-	          ((xs)->length - idx) * sizeof(*(xs)->data));	        \
-          da_checked_at(xs, idx) = (item);				\
-          (xs)->length++;						\
-     while (0)
+#define da_insert(xs, idx, item)					\
+     do {								\
+	  da_reserve(xs, (xs)->length + 1);				\
+	  memmove((xs)->data + (idx) + 1,				\
+		  (xs)->data + (idx),					\
+		  ((xs)->length - (idx)) * sizeof(*(xs)->data));	\
+	  da_checked_at(xs, (idx)) = (item);				\
+	  (xs)->length++;						\
+     } while (0)
+
+/* Removes an element from the dynamic array xs at index idx. */
+#define da_remove(xs, idx)						\
+     do {								\
+	  memmove((xs)->data + (idx),					\
+		  (xs)->data + (idx) + 1,				\
+		  ((xs)->length - (idx) - 1) * sizeof(*(xs)->data));	\
+	  (xs)->length--;						\
+     } while (0)
 
 /* Typedefs for trivial types */
 typedef da_t(void*) da_ptr_t;
@@ -135,4 +144,5 @@ typedef da_t(double) da_double_t;
  * 1.0.1 (2026-03-19) Now da_checked_at asserts the index is less than the length of the array too.
  * 1.1   (2026-08-09) Added da_member
                       Fixed da_at
+ * 1.2   (2026-09-27) Added da_remove 		      
  */
