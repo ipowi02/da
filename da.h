@@ -7,7 +7,7 @@
  */
 #ifndef DA_H
 #define DA_H
-#define DA_H_VERSION "1.2"
+#define DA_H_VERSION "1.3"
 
 #define DA_ALLOC malloc
 #define DA_FREE free
@@ -29,7 +29,7 @@
 
 
 #define da_init(xs) memset((xs), 0, sizeof(*(xs)))
-#define da_free(xs) DA_FREE((xs).data)
+#define da_free(xs) DA_FREE((xs)->data)
 #define da_deinit(xs) do { da_free(xs); da_init(xs); } while(0)
 
 /* ACCESSORS */
@@ -144,5 +144,6 @@ typedef da_t(double) da_double_t;
  * 1.0.1 (2026-03-19) Now da_checked_at asserts the index is less than the length of the array too.
  * 1.1   (2026-08-09) Added da_member
                       Fixed da_at
- * 1.2   (2026-09-27) Added da_remove 		      
+ * 1.2   (2026-09-27) Added da_remove
+ * 1.3   (2026-10-01) da_free now works with an arrow
  */
